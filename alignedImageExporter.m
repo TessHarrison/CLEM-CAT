@@ -306,15 +306,15 @@
             for d1Index = 1:nTiles(1)
                 %loop through each yVal (each row)
                 
-                currentD1Limits = [((d1Index-1)*tileDimensions(1))+1;d1Index*tileDimensions(1)]; 
-                %fkn 1 indexing lol
+                currentD1Limits = exportLimits(1,1) + [((d1Index-1)*tileDimensions(1));d1Index*tileDimensions(1)]; 
+                %note we start these from the start of the export limits
 
                 for d2Index = 1:nTiles(2)
                     tileCounter = tileCounter+1; % updates which tile we're using
 
                     waitbar(tileCounter/totalTiles, progressBar, strcat("Exporting Images",newline ,"Tile: ", num2str(tileCounter),"/",num2str(totalTiles)));
 
-                    currentD2Limits = [((d2Index-1)*tileDimensions(2))+1;d2Index*tileDimensions(2)]; 
+                    currentD2Limits = exportLimits(1,2)+[((d2Index-1)*tileDimensions(2));d2Index*tileDimensions(2)]; 
 
                     %loop through each image
                     for imageIdx = 1:length(tiffArr)
@@ -324,7 +324,8 @@
                             importerDataCell{imageIdx,3}, [currentD1Limits, currentD2Limits]);
 
                         %upscale section if needed
-                        imageSection = imresize(imageSection, relativeSFs(imageIdx));
+                        %imageSection = imresize(imageSection, relativeSFs(imageIdx));
+                        imageSection = imresize(imageSection,options.tileSize);
 
                         tiffArr(imageIdx).writeEncodedTile(tileCounter, imageSection);
                         
